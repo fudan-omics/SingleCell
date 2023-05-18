@@ -20,3 +20,14 @@
 - 群集分析和细胞类型鉴定（例如，FindClusters和DimPlot函数）
 - 差异表达分析和可视化（例如，FindMarkers、VlnPlot和DotPlot函数）
 - 可视化工具（例如，FeaturePlot、UMAP和t-SNE函数） 
+
+## Understand websites
+### 是比较对照和实验
+[https://satijalab.org/seurat/articles/integration_introduction.html]
+The link you provided is to a tutorial on how to integrate multiple single-cell RNA sequencing (scRNA-seq) datasets using the Seurat R package. The tutorial begins by discussing the challenges of integrating scRNA-seq datasets, such as identifying cell populations that are present across multiple datasets. It then introduces the Seurat integration methods, which first identify cross-dataset pairs of cells that are in a matched biological state ('anchors'). These methods can be used both to correct for technical differences between datasets (i.e. batch effect correction), and to perform comparative scRNA-seq analysis of across experimental conditions. The tutorial then provides a step-by-step guide on how to use the Seurat integration methods, using a dataset of human immune cells (PBMC) in either a resting or interferon-stimulated state as an example. Finally, the tutorial discusses some of the limitations of the Seurat integration methods and provides some tips for troubleshooting common problems.
+
+# Code
+## Utils
+### Data Split
+#### Task
+df1 has 2 columns named as [treatment,cell], column names of df2 is the same as values in cell in df1. There are four types of `treatment`, split df2 by treatment type.
