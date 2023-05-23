@@ -31,3 +31,58 @@ The link you provided is to a tutorial on how to integrate multiple single-cell 
 ### Data Split
 #### Task
 df1 has 2 columns named as [treatment,cell], column names of df2 is the same as values in cell in df1. There are four types of `treatment`, split df2 by treatment type.
+## Seurat
+### Change Label Names
+#### Background
+- Using Seurat package in R
+- R version 4.2.2
+- Seurat version 4.1.3
+#### Task
+- Using `p1 <- DimPlot(immune.combined, reduction = "umap", group.by = "orig.ident")` in Seurat to draw umap 
+- orig.ident of my Seurat Object named `pbmc` is 'X1' and 'X2'
+- I want to convert 'X1' into 'Control' while 'X2' to 'HMC'
+- How to change the orig.ident of `pbmc` or change labels in umap figures
+#### Answer
+```R
+# Assign new labels to the cells in your Seurat object
+Idents(pbmc) <- c("Control", "HMC")[pbmc$orig.ident]
+# Draw umap with updated labels
+p1 <- DimPlot(pbmc, reduction = "umap", group.by = "orig.ident")
+```
+### Cluster
+#### Background
+- Using Seurat package in R
+- R version 4.2.2
+- Seurat version 4.1.3
+- seurat object named `immune.combined`
+#### Task
+- There is a seurat object `immune.combined` which is analysed by the standard flow and is clustered
+- A list named `cluster_list` stores dataframes produced by `FindMarkers(object = immune.combined, ident.1 = cluster_num, min.pct = 0.25)` of each cluster
+- I want every cluster in `immune.combined` is automatically annotated cell type by markers with `SingleR` package
+#### Answer
+```R
+library(SingleR)
+# 获取Seurat对象中的表达矩阵和基因名
+expr_matrix <- GetAssayData(object = immune.combined, slot = "counts")
+gene_names <- rownames(expr_matrix)
+# 对每个聚类进行注释
+for (cluster_num in unique(Idents(object = immune.combined))) {
+  # 获取聚类标识为cluster_num的细胞的表达矩阵和基因名
+  cluster_expr_matrix <- expr_matrix[, Idents(object = immune.combined) == cluster_num]
+  cluster_gene_names <- gene_names
+  
+  # 获取该聚类的marker基因
+  cluster_markers <- FindMarkers(object = immune.combined, ident.1 = cluster_num, min.pct = 0.25)
+  top_markers <- head(cluster_markers[order(cluster_markers$p_val_adj), ], 10)$gene
+  
+  # 使用SingleR进行注释
+  annotation <- SingleR(test = cluster_expr_matrix, labels = NULL, gene.names = cluster_gene_names, 
+                        ref = "refdata-celltype", de.tags = top_markers)$labels
+  # 将注释结果保存到聚类对应的数据框中
+  cluster_list[[cluster_num]]$cell_type <- annotation
+}
+
+# 查看注释结果
+cluster_list
+
+```
